@@ -59,7 +59,7 @@
 - **目标对象**：首版限定僵尸目标
 - **更新频率**：优先低频度更新（如 `Events.EveryOneMinute` 或 `Events.EveryTenMinutes`）而非每帧
 - **调试支持**：日志、聊天提示或临时图标，便于验证行为
-- **数据接口**：预留 `npc:getModData().squadState`、`npc:getModData().taskQueue` 等字段
+- **数据接口**：预留 `npc:getModData().brain`、`npc:getModData().taskQueue` 等字段
 
 ## 任务清单
 
@@ -69,9 +69,9 @@
 2. 搭建模块目录：
    - `client/main.lua`
    - `server/main.lua`
-   - `shared/squad-manager.lua`
-   - `shared/squad-data.lua`
-   - `shared/squad-command.lua`
+   - `shared/squad/manager.lua`
+   - `shared/squad/data.lua`
+   - `shared/squad/command.lua`
 3. 实现 `shared` 公共模块，定义数据结构与常量。
 4. 实现 `server/main.lua`：初始化全局 `ModData`，注册服务器事件。
 5. 实现 `client/main.lua`：注册客户端事件、UI 命令入口、发送服务器命令。
@@ -106,7 +106,7 @@
 
 ### 里程碑 1：联机架构搭建完成
 
-- `server/main.lua`、`client/main.lua`、`shared/` 模块初步搭建
+- `server/squad/main.lua`、`client/squad/main.lua`、`shared/squad/` 模块初步搭建
 - 全局 `ModData` 初始化
 - 客户端命令发送/服务器接收机制可用
 - 单机可运行
@@ -135,3 +135,88 @@ MVP 版本目标是：
 - 客户端能够显示基本效果，且单机模式可用
 
 这个版本不要求完整的 UI、背包、升级等系统，只要战斗行为可观察并稳定运行。
+
+---
+
+## 实现架构（基于 Bandits 参考代码）
+
+### 模块职责
+
+#### `shared/squad/`（共用代码，客户端/服务端均加载）
+
+| 文件 | 职责 |
+|------|------|
+| `data.lua` | 小队全局数据结构、NPC 状态字段、命令类型枚举 |
+| `gmd.lua` | `ModData.getOrCreate('Squad')` 初始化、数据集群、同步请求 |
+| `utils.lua` | 距离计算、随机选择、通用工具函数 |
+| `names.lua` | NPC 姓名生成 |
+| `brain.lua` | NPC 大脑数据结构（武器、弹药、任务队列） |
+| `command.lua` | 命令定义与校验（attack、defend、follow、stop） |
+| `weapons.lua` | 固定武器表、无限弹药配置 |
+| `combat.lua` | 战斗判定逻辑（命中、伤害、击杀） |
+
+#### `server/squad/`
+
+| 文件 | 职责 |
+|------|------|
+| `main.lua` | 服务端入口：注册 `OnClientCommand`、`OnInitGlobalModData`、AI 定时循环 |
+| `server-commands.lua` | 处理客户端发来的命令（attack/defend/recruit 等），更新 NPC 大脑 |
+| `spawner.lua` | NPC 实体生成逻辑 |
+| `ai.lua` | NPC AI 状态机执行器（每 N 秒 Tick） |
+
+#### `client/squad/`
+
+| 文件 | 职责 |
+|------|------|
+| `main.lua` | 客户端入口：注册 `OnServerCommand`、右键菜单、热键 |
+| `client-commands.lua` | 接收并处理服务端推送的数据更新 |
+
+### 数据流
+
+```text
+[玩家右键菜单]
+       │ sendClientCommand('Squad', 'AttackTarget', {npcId, targetId})
+       ▼
+[服务端 main.lua] → OnClientCommand → ServerCommands.AttackTarget()
+       │ 验证权限、更新 brain.tasks、写入 ModData
+       ▼
+[服务端 AI 循环 Events.EveryTenSeconds]
+       │ AI.Tick() → 遍历所有 NPC，执行 brain.tasks
+       │ 移动、攻击、伤害判定
+       ▼
+[ModData.transmit('Squad')] → 广播到所有客户端
+       ▼
+[客户端 main.lua] → OnServerCommand → ClientCommands.UpdateNpc()
+       │ 更新本地 NPC 显示、动画
+       ▼
+[玩家看到 NPC 行为]
+```
+
+### 命令路由约定
+
+- 客户端 → 服务端：`sendClientCommand('Squad', 'CommandName', args)`，服务端 `OnClientCommand` 监听 `module == 'Squad'`
+- 服务端 → 客户端：`sendServerCommand('Squad', 'CommandName', args)`，客户端 `OnServerCommand` 监听 `module == 'Squad'`
+- 与 Bandits 参考代码保持一致的路由模式
+
+### 首版 MVP 文件清单
+
+```shell
+Contents/mods/squad/42/media/lua/
+├── shared/squad/
+│   ├── data.lua            # 全局数据结构
+│   ├── mod-data.lua        # ModData 管理
+│   ├── utils.lua           # 工具函数
+│   ├── names.lua           # 姓名生成
+│   ├── brain.lua           # NPC 大脑
+│   ├── command.lua         # 命令定义
+│   ├── weapons.lua         # 武器配置
+│   └── combat.lua          # 战斗判定
+├── client/squad/
+│   ├── main.lua            # 客户端入口
+│   └── client-commands.lua
+└── server/squad/
+    ├── main.lua            # 服务端入口
+    ├── server-commands.lua
+    ├── spawner.lua         # NPC 生成
+    └── ai.lua              # AI 执行器
+```
