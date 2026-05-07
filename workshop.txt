@@ -1,0 +1,14 @@
+version=1
+id=
+title=[B42] 战术小队 Squad
+description=在末日中组建并指挥你的精英小队！
+description=作为小队长，招募 NPC 幸存者加入你的队伍，通过指令轮盘下达战术命令：跟随、进攻、防御、搜刮、坚守、守卫据点。
+description=每个队员拥有独立的背包、状态、技能和经验值系统，会随着战斗和任务自动成长升级。
+description=支持完整的多人同步、行为状态机 AI、队员信息面板和小队管理界面。
+description=
+description=Assemble and command your elite squad in the apocalypse!
+description=As squad leader, recruit NPC survivors and issue tactical orders via radial menu: Follow, Attack, Defend, Loot, Hold, and Guard.
+description=Each member has independent inventory, stats, skills, and XP progression that grows through combat and missions.
+description=Features full multiplayer sync, behavior state machine AI, member info panel, and squad management UI.
+tags=Build 42;NPC;Squad;Multiplayer;Realistic
+visibility=public

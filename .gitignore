@@ -1,0 +1,73 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+dist/
+tmp/
+temp/
+out-tsc/
+log/
+logs/
+*.tsbuildinfo
+coverage/
+/esbuild-kit
+/v8-compile-cache-0
+/node-compile-cache
+*.db
+.clinic
+.pnpm-store/
+/**/core
+!/packages/**/core/
+/tsx-*
+sw.js
+
+# dependencies
+node_modules/
+.pnpm-debug.log
+
+# Env
+*.env*
+!*.env.example
+environment.*.mts
+!environment.example.mts
+.npmrc
+worker-configuration.d.ts
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/project.code-snippets
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Storybook
+*storybook.log
+storybook-static
+
+# Fonts
+*.ttf
+*.woff
+*.woff2
