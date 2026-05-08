@@ -67,7 +67,6 @@ local onPreFillWorldContextMenu = function(playerID, context, worldobjects, test
 
   -- 获取点击的方格（从 worldobjects 取第一个物体的方格）
   local square = Utils.getClickedSquare()
-  Utils.debugLog('menu', 'square is nil: ' .. tostring(square == nil))
   Utils.debugLog('menu', 'clicked square: (' .. square:getX() .. ', ' .. square:getY() .. ', ' .. square:getZ() .. ')')
 
   -- 检查点击位置是否有 Squad NPC

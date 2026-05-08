@@ -2,8 +2,6 @@
 -- 定义小队、NPC 状态、命令类型等核心数据结构与常量
 -- 客户端和服务端均加载此模块
 
-local Utils = require('squad/utils')
-
 -- 命令类型枚举
 local CommandType = {
   Attack = 'Attack',
@@ -18,6 +16,7 @@ local State = {
   Moving = 'Moving',
   Attacking = 'Attacking',
   Defending = 'Defending',
+  Follow = 'Follow',
   Dead = 'Dead',
 }
 
@@ -45,6 +44,9 @@ local makeBrain = function(npcId, name, weaponType)
 
     -- 任务队列
     tasks = {},
+    -- 当前正在执行的任务（客户端 AI 使用）
+    currentTask = nil,
+    taskState = nil,
 
     -- 当前目标
     targetId = nil,
@@ -59,6 +61,9 @@ local makeBrain = function(npcId, name, weaponType)
 
     -- 所属小队
     squadId = nil,
+
+    -- 跟随的队长 ID
+    leaderId = nil,
   }
 end
 
@@ -90,6 +95,23 @@ local removeBrain = function(npc)
   modData.brain = nil
 end
 
+-- 清空 NPC 任务队列
+local clearTasks = function(brain)
+  if brain then
+    brain.tasks = {}
+    brain.currentTask = nil
+    brain.taskState = nil
+  end
+end
+
+-- 添加任务到队列
+local addTask = function(brain, task)
+  if brain and task then
+    brain.tasks = brain.tasks or {}
+    table.insert(brain.tasks, task)
+  end
+end
+
 return {
   CommandType = CommandType,
   State = State,
@@ -99,4 +121,6 @@ return {
   setBrain = setBrain,
   removeBrain = removeBrain,
   makeSquad = makeSquad,
+  clearTasks = clearTasks,
+  addTask = addTask,
 }

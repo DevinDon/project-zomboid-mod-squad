@@ -9,7 +9,7 @@ local Utils = require('squad/utils')
 require('squad/menu')
 
 -- 加载 NPC 行为处理器（将僵尸转换为人类型为）
-require('squad/npchandler')
+require('squad/npc-handler')
 
 -- 服务端命令处理：路由到对应模块
 local onServerCommand = function(module, command, args)

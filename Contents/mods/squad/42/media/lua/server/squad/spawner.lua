@@ -24,8 +24,6 @@ local spawnNPC = function(x, y, z, options)
   -- 设置外观为人类
   npc:setFakeDead(false)
   npc:setCanWalk(true)
-  -- 禁用僵尸引擎 AI，由我们的 AI 系统控制
-  npc:setUseless(true)
   -- 应用人类皮肤纹理，替换默认僵尸外观
   local humanVisual = npc:getHumanVisual()
   if humanVisual then
