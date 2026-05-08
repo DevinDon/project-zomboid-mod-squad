@@ -35,6 +35,9 @@
     "getOnlinePlayers",
     "instanceof",
     "addZombiesInOutfit",
+    "IsoZombie",
+    "ZombRandFloat",
+    "getGameTime",
   ],
   "Lua.format.defaultConfig": {
     "indent_style": "space",

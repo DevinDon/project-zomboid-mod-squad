@@ -204,7 +204,7 @@ MVP 版本目标是：
 Contents/mods/squad/42/media/lua/
 ├── shared/squad/
 │   ├── data.lua            # 全局数据结构
-│   ├── mod-data.lua        # ModData 管理
+│   ├── modata.lua          # ModData 管理
 │   ├── utils.lua           # 工具函数
 │   ├── names.lua           # 姓名生成
 │   ├── brain.lua           # NPC 大脑
